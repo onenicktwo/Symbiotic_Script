@@ -81,12 +81,4 @@ public class Playback : MonoBehaviour
                            * angleDeg * Mathf.Deg2Rad / dt;
         rb.angularVelocity = angularVel;
     }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.transform.tag == "Clone" || collision.transform.tag == "Player")
-        {
-            Despawn();
-        }
-    }
 }

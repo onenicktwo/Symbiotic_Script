@@ -106,14 +106,6 @@ public class Recorder : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.transform.tag == "Clone")
-        {
-            GetComponent<PlayerController>().Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
-        }
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "SpawnPad")
