@@ -5,10 +5,14 @@ public class Recorder : MonoBehaviour
 {
     public GameObject clonePrefab;
     public KeyCode recordKey = KeyCode.E;
+    public KeyCode playKey = KeyCode.Q;
 
     private List<TimePoint> recording;
     private bool isRecording = false;
     private float recordingStartTime;
+    private bool canSpawn = false;
+
+    private Transform currSpawnPad;
 
     public static List<GameObject> activeClones = new List<GameObject>();
 
@@ -16,14 +20,19 @@ public class Recorder : MonoBehaviour
     {
         if (Input.GetKeyDown(recordKey))
         {
-            if (isRecording)
-            {
-                StopRecording();
-            }
-            else
+            if (!isRecording && canSpawn)
             {
                 StartRecording();
             }
+            else if (isRecording)
+            {
+                StopRecording();
+            }
+        }
+
+        if (Input.GetKeyDown(playKey) && canSpawn && !isRecording)
+        {
+            ActivateCurrentClones();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -43,6 +52,7 @@ public class Recorder : MonoBehaviour
 
     void StartRecording()
     {
+        ActivateCurrentClones();
         isRecording = true;
         recording = new List<TimePoint>();
         recordingStartTime = Time.time;
@@ -68,13 +78,10 @@ public class Recorder : MonoBehaviour
         Quaternion startRot = recording[0].rotation;
 
         GameObject clone = Instantiate(clonePrefab, startPos, startRot);
-        activeClones.Add(clone);
-
         Playback playback = clone.GetComponent<Playback>();
-        if (playback != null)
-        {
-            playback.StartPlayback(new List<TimePoint>(recording));
-        }
+        playback.Init(recording);
+        playback.Despawn();
+        activeClones.Add(clone);
     }
 
     public void ResetAllClones()
@@ -85,5 +92,42 @@ public class Recorder : MonoBehaviour
             Destroy(clone);
         }
         activeClones.Clear();
+    }
+
+    public void ActivateCurrentClones()
+    {
+        foreach (GameObject clone in activeClones)
+        {
+            Playback playback = clone.GetComponent<Playback>();
+            if (playback != null)
+            {
+                playback.Spawn();
+            }
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.tag == "Clone")
+        {
+            GetComponent<PlayerController>().Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "SpawnPad")
+        {
+            canSpawn = true;
+            currSpawnPad = other.transform;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "SpawnPad")
+        {
+            canSpawn = false;
+        }
     }
 }

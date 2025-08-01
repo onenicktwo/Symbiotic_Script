@@ -60,6 +60,12 @@ public class PlayerController : MonoBehaviour
             verticalSpeed = jumpForce;
     }
 
+    public void Respawn(Vector3 pos)
+    {
+        rb.velocity = Vector3.zero;
+        transform.position = pos;
+    }
+
     private void ApplyMovement()
     {
         Vector3 camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
