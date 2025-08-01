@@ -30,14 +30,20 @@ public class Recorder : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(playKey) && canSpawn && !isRecording)
+
+
+        if (Input.GetKeyDown(playKey))
         {
-            ActivateCurrentClones();
+            if (!isRecording && canSpawn)
+            {
+                ActivateCurrentClones();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetAllClones();
+            if (currSpawnPad != null) GetComponent<PlayerController>().Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
         }
     }
 

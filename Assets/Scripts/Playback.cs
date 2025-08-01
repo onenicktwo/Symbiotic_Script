@@ -10,7 +10,7 @@ public class Playback : MonoBehaviour
     private float playbackStartTime;
 
     private Rigidbody rb;
-    private int spawnLayer = 0;
+    private int spawnLayer = 9;
     private int despawnLayer = 8;
 
     void Awake()
@@ -42,6 +42,7 @@ public class Playback : MonoBehaviour
         Vector3 startPos = recording[0].position;
         Quaternion startRot = recording[0].rotation;
         rb.velocity = Vector3.zero;
+        rb.rotation = startRot;
         transform.position = startPos;
         transform.rotation = startRot;
         isPlaying =false;
