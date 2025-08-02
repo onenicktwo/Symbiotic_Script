@@ -12,6 +12,8 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float pitchSpeed = 180f;
     [SerializeField] private float pitchMin = -30f;
     [SerializeField] private float pitchMax = 75f;
+    [SerializeField] private LayerMask collisionMask;
+    [SerializeField] private float cameraRadius = 0.2f;
 
     [Header("Smoothing")]
     [SerializeField] private float positionSmooth = 0.05f;
@@ -47,10 +49,29 @@ public class CameraFollow : MonoBehaviour
         Vector3 pivot = target.position + targetOffset;
         Vector3 wanted = pivot - rot * Vector3.forward * distance;
 
-        transform.position = Vector3.SmoothDamp(transform.position,
-                                                wanted,
-                                                ref currentVel,
-                                                positionSmooth);
+        Vector3 dir = (wanted - pivot).normalized;
+        float maxDist = distance;
+
+        RaycastHit hit;
+        if (Physics.SphereCast(pivot, cameraRadius, dir, out hit, distance, collisionMask))
+        {
+            maxDist = hit.distance - 0.05f;
+            if (maxDist < 0.1f) maxDist = 0.1f;
+        }
+
+        Vector3 finalPos = pivot - rot * Vector3.forward * maxDist;
+
+        transform.position = Vector3.SmoothDamp(transform.position, finalPos, ref currentVel, positionSmooth);
         transform.rotation = rot;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (target == null) return;
+        Quaternion rot = Quaternion.Euler(pitch, yaw, 0f);
+        Vector3 pivot = target.position + targetOffset;
+        Vector3 wanted = pivot - rot * Vector3.forward * distance;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(wanted, cameraRadius);
     }
 }

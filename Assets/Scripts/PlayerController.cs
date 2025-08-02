@@ -60,6 +60,12 @@ public class PlayerController : MonoBehaviour
             verticalSpeed = jumpForce;
     }
 
+    public void Respawn(Vector3 pos)
+    {
+        rb.velocity = Vector3.zero;
+        transform.position = pos;
+    }
+
     private void ApplyMovement()
     {
         Vector3 camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
@@ -86,22 +92,29 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Vector3 desiredDir = inputDir;
-            Vector3 desiredVel = desiredDir * airSpeed;
-            Vector3 velocityDiff = desiredVel - horizVel;
+            if (inputDir.sqrMagnitude > 0.001f)
+            {
+                Vector3 desiredDir = inputDir;
+                Vector3 desiredVel = desiredDir * airSpeed;
+                Vector3 velocityDiff = desiredVel - horizVel;
 
-            Vector3 accel = Vector3.Project(velocityDiff, desiredDir) * airAcceleration;
-            Vector3 brake = Vector3.ProjectOnPlane(velocityDiff, desiredDir).normalized
-                             * airBraking * inputDir.magnitude;
+                Vector3 accel = Vector3.Project(velocityDiff, desiredDir) * airAcceleration;
+                Vector3 brake = Vector3.ProjectOnPlane(velocityDiff, desiredDir).normalized
+                                 * airBraking * inputDir.magnitude;
 
-            rb.AddForce((accel + brake), ForceMode.Acceleration);
+                rb.AddForce((accel + brake), ForceMode.Acceleration);
 
-            horizVel = rb.velocity; horizVel.y = 0f;
-            horizVel = Vector3.ClampMagnitude(horizVel, airSpeed);
+                horizVel = rb.velocity; horizVel.y = 0f;
+                horizVel = Vector3.ClampMagnitude(horizVel, airSpeed);
+            }
+            else
+            {
+                horizVel = Vector3.MoveTowards(horizVel, Vector3.zero, airBraking * Time.fixedDeltaTime);
+            }
         }
 
         verticalSpeed += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
-        if (isGrounded && verticalSpeed < 0) verticalSpeed = -2f;
+        if (isGrounded && verticalSpeed < 0) verticalSpeed = 0f;
 
         rb.velocity = new Vector3(horizVel.x, verticalSpeed, horizVel.z);
     }
