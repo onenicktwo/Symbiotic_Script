@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class Recorder : MonoBehaviour
 {
@@ -12,12 +13,23 @@ public class Recorder : MonoBehaviour
     private float recordingStartTime;
     private bool canSpawn = false;
 
-    private Transform currSpawnPad;
+    private Transform currSpawnPad = null;
 
     public static List<GameObject> activeClones = new List<GameObject>();
 
+    public float maxTime = 60f;
+    private float currTime = 0f;
+
+    public TextMeshProUGUI timer;
+
     void Update()
     {
+        if (isRecording)
+        {
+            currTime -= Time.deltaTime;
+        }
+        timer.text = currTime.ToString("#.00");
+
         if (Input.GetKeyDown(recordKey))
         {
             if (!isRecording && canSpawn)
@@ -42,8 +54,17 @@ public class Recorder : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ResetAllClones();
-            if (currSpawnPad != null) GetComponent<PlayerController>().Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
+            if (activeClones.Count > 0)
+            {
+                currTime = maxTime;
+                ResetAllClones();
+                GetComponent<PlayerController>().Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
+            }
+        }
+
+        if (isRecording && currTime <= 0)
+        {
+            StopRecording();
         }
     }
 
@@ -116,8 +137,22 @@ public class Recorder : MonoBehaviour
     {
         if (other.tag == "SpawnPad")
         {
+            if (isRecording)
+            {
+                StopRecording();
+            }
+            if (currSpawnPad != other.transform)
+            {
+                ResetAllClones();
+                currSpawnPad = other.transform;
+                currTime = maxTime;
+            }
             canSpawn = true;
-            currSpawnPad = other.transform;
+        }
+
+        if (other.tag == "Button")
+        {
+            other.GetComponent<ButtonEvent>().ActivateButton();
         }
     }
 
@@ -126,6 +161,11 @@ public class Recorder : MonoBehaviour
         if (other.tag == "SpawnPad")
         {
             canSpawn = false;
+        }
+
+        if (other.tag == "Button")
+        {
+            other.GetComponent<ButtonEvent>().DeactivateButton();
         }
     }
 }

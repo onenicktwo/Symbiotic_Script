@@ -82,4 +82,20 @@ public class Playback : MonoBehaviour
                            * angleDeg * Mathf.Deg2Rad / dt;
         rb.angularVelocity = angularVel;
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Button")
+        {
+            other.GetComponent<ButtonEvent>().ActivateButton();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Button")
+        {
+            other.GetComponent<ButtonEvent>().DeactivateButton();
+        }
+    }
 }
