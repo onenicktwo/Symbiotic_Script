@@ -8,6 +8,9 @@ TagManager:
   - SpawnPad
   - Clone
   - Button
+  - SmallSpawnPad
+  - Lever
+  - LargeSpawnPad
   layers:
   - Default
   - TransparentFX

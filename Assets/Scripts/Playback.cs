@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using static Recorder;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Playback : MonoBehaviour
@@ -13,6 +14,8 @@ public class Playback : MonoBehaviour
     private int spawnLayer = 9;
     private int despawnLayer = 8;
 
+    private CloneSize cloneSize = CloneSize.Medium;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -23,9 +26,10 @@ public class Playback : MonoBehaviour
         recording = rec;
     }
 
-    public void Spawn()
+    public void Spawn(CloneSize cloneSize)
     {
         if (isPlaying) return;
+        this.cloneSize = cloneSize;
         gameObject.layer = spawnLayer;
         transform.GetChild(0).gameObject.layer = spawnLayer;
         transform.GetChild(1).gameObject.layer = spawnLayer;
@@ -87,7 +91,7 @@ public class Playback : MonoBehaviour
     {
         if (other.tag == "Button")
         {
-            other.GetComponent<ButtonEvent>().ActivateButton();
+            other.GetComponent<ButtonEvent>().ActivateButton(cloneSize);
         }
     }
 
@@ -95,7 +99,7 @@ public class Playback : MonoBehaviour
     {
         if (other.tag == "Button")
         {
-            other.GetComponent<ButtonEvent>().DeactivateButton();
+            other.GetComponent<ButtonEvent>().DeactivateButton(cloneSize);
         }
     }
 }
