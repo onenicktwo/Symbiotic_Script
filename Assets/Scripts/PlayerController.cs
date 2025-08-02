@@ -26,6 +26,10 @@ public class PlayerController : MonoBehaviour
     private float verticalSpeed;
     private bool isGrounded;
 
+    public GameObject small;
+    public GameObject medium;
+    public GameObject large;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -46,7 +50,47 @@ public class PlayerController : MonoBehaviour
         GroundCheck();
         ApplyMovement();
     }
+    
+    public void BecomeSmall()
+    {
+        col.center = new Vector3(0f, -0.5f, 0f);
+        col.radius = 0.5f;
+        col.height = 1f;
+        small.SetActive(true);
+        medium.SetActive(false);
+        large.SetActive(false);
 
+        jumpForce = 25f;
+        moveSpeed = 12f;
+        airSpeed = 12f;
+    }
+
+    public void BecomeMedium()
+    {
+        col.center = new Vector3(0f, 0f, 0f);
+        col.radius = 0.5f;
+        col.height = 2f;
+        small.SetActive(false);
+        medium.SetActive(true);
+        large.SetActive(false);
+
+        jumpForce = 15f;
+        moveSpeed = 7f;
+        airSpeed = 7f;
+    }
+    public void BecomeLarge()
+    {
+        col.center = new Vector3(0f, 0f, 0f);
+        col.radius = 1f;
+        col.height = 2f;
+        small.SetActive(false);
+        medium.SetActive(false);
+        large.SetActive(true);
+
+        jumpForce = 5f;
+        moveSpeed = 5f;
+        airSpeed = 5f;
+    }
 
     private void ReadInput()
     {
@@ -122,13 +166,10 @@ public class PlayerController : MonoBehaviour
     private void GroundCheck()
     {
         float sphereRadius = col.radius * 0.9f;
-        Vector3 origin = transform.position + Vector3.up * 0.05f;
-        isGrounded = Physics.SphereCast(origin,
-                                        sphereRadius,
-                                        Vector3.down,
-                                        out _,
-                                        (col.height * 0.5f) - sphereRadius + 0.2f,
-                                        groundMask);
+        Vector3 bottomCenter = col.bounds.center + Vector3.down *
+                               (col.bounds.extents.y - sphereRadius + 0.05f);
+
+        isGrounded = Physics.CheckSphere(bottomCenter, sphereRadius, groundMask);
     }
 
     private void OnDrawGizmosSelected()
@@ -136,7 +177,7 @@ public class PlayerController : MonoBehaviour
         if (col == null) col = GetComponent<CapsuleCollider>();
         Gizmos.color = isGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(transform.position + Vector3.up * 0.05f +
-                              Vector3.down * ((col.height * 0.5f) - col.radius + 0.2f),
+                              Vector3.down * ((col.height) - col.radius + 0.2f),
                               col.radius * 0.9f);
     }
 }

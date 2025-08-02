@@ -25,6 +25,8 @@ public class Recorder : MonoBehaviour
 
     public TextMeshProUGUI timer;
 
+    private PlayerController controller;
+
     public enum CloneSize
     {
         Small,
@@ -34,11 +36,22 @@ public class Recorder : MonoBehaviour
 
     private CloneSize cloneSize = CloneSize.Medium;
 
+    private void Awake()
+    {
+        controller = GetComponent<PlayerController>();
+        currTime = maxTime;
+    }
+
     void Update()
     {
         if (isRecording)
         {
             currTime -= Time.deltaTime;
+            float t = Time.time - recordingStartTime;
+            bool interactPressed = Input.GetKeyDown(interactKey);
+
+            if (interactPressed) Debug.Log("Interacted");
+            recording.Add(new TimePoint(t, transform.position, transform.rotation, interactPressed));
         }
         timer.text = currTime.ToString("#.00");
 
@@ -58,17 +71,19 @@ public class Recorder : MonoBehaviour
         {
             if (!isRecording && canSpawn)
             {
+                controller.BecomeMedium();
                 ActivateCurrentClones();
             }
         }
 
-        if (Input.GetKeyDown(resetKey))
+        if (Input.GetKeyDown(resetKey) && !isRecording)
         {
             if (activeClones.Count > 0)
             {
                 currTime = maxTime;
                 ResetAllClones();
-                GetComponent<PlayerController>().Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
+                controller.Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
+                controller.BecomeMedium();
             }
         }
 
@@ -86,17 +101,17 @@ public class Recorder : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        if (isRecording)
-        {
-            float timeSinceRecordingStarted = Time.time - recordingStartTime;
-            recording.Add(new TimePoint(timeSinceRecordingStarted, transform.position, transform.rotation));
-        }
-    }
-
     void StartRecording()
     {
+        switch (cloneSize)
+        {
+            case CloneSize.Small:
+                controller.BecomeSmall(); break;
+            case CloneSize.Medium:
+                controller.BecomeMedium(); break;
+            case CloneSize.Large:
+                controller.BecomeLarge(); break;
+        }
         ActivateCurrentClones();
         isRecording = true;
         recording = new List<TimePoint>();
@@ -124,7 +139,7 @@ public class Recorder : MonoBehaviour
 
         GameObject clone = Instantiate(clonePrefab, startPos, startRot);
         Playback playback = clone.GetComponent<Playback>();
-        playback.Init(recording);
+        playback.Init(recording, cloneSize);
         playback.Despawn();
         activeClones.Add(clone);
     }
@@ -146,24 +161,18 @@ public class Recorder : MonoBehaviour
             Playback playback = clone.GetComponent<Playback>();
             if (playback != null)
             {
-                playback.Spawn(cloneSize);
+                playback.Spawn();
             }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "SpawnPad" || other.tag == "SmallSpawnPad" || other.tag == "LargeSpawnPad")
+        if ((other.tag == "SpawnPad" || other.tag == "SmallSpawnPad" || other.tag == "LargeSpawnPad") && !isRecording)
         {
-            if (isRecording)
-            {
-                StopRecording();
-            }
             if (currSpawnPad != other.transform)
             {
-                ResetAllClones();
                 currSpawnPad = other.transform;
-                currTime = maxTime;
 
                 if (other.tag == "SmallSpawnPad")
                 {
