@@ -6587,6 +6587,22 @@ PrefabInstance:
       propertyPath: timer
       value: 
       objectReference: {fileID: 2235518145631710860}
+    - target: {fileID: 4503941006055309283, guid: 56ff367ac2447664d85a00634b484cec, type: 3}
+      propertyPath: doors.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4503941006055309283, guid: 56ff367ac2447664d85a00634b484cec, type: 3}
+      propertyPath: doors.Array.data[0]
+      value: 
+      objectReference: {fileID: 1153735188}
+    - target: {fileID: 4503941006055309283, guid: 56ff367ac2447664d85a00634b484cec, type: 3}
+      propertyPath: doors.Array.data[1]
+      value: 
+      objectReference: {fileID: 1031291858}
+    - target: {fileID: 4503941006055309283, guid: 56ff367ac2447664d85a00634b484cec, type: 3}
+      propertyPath: doors.Array.data[2]
+      value: 
+      objectReference: {fileID: 99644423}
     - target: {fileID: 9085960450677684980, guid: 56ff367ac2447664d85a00634b484cec, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

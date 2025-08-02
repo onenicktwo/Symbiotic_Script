@@ -19,6 +19,7 @@ public class Recorder : MonoBehaviour
     private Transform currLever;
 
     public static List<GameObject> activeClones = new List<GameObject>();
+    public GameObject[] doors;
 
     public float maxTime = 60f;
     private float currTime = 0f;
@@ -81,6 +82,7 @@ public class Recorder : MonoBehaviour
             if (activeClones.Count > 0)
             {
                 currTime = maxTime;
+                ResetAllDoors();
                 ResetAllClones();
                 controller.Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
                 controller.BecomeMedium();
@@ -152,6 +154,14 @@ public class Recorder : MonoBehaviour
             Destroy(clone);
         }
         activeClones.Clear();
+    }
+
+    void ResetAllDoors()
+    {
+        foreach (GameObject door in doors)
+        {
+            door.SetActive(true);
+        }
     }
 
     public void ActivateCurrentClones()
