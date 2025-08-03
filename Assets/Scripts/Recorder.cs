@@ -1,6 +1,7 @@
-using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Recorder : MonoBehaviour
 {
@@ -81,10 +82,10 @@ public class Recorder : MonoBehaviour
         {
             if (activeClones.Count > 0)
             {
+                controller.Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
                 currTime = maxTime;
                 ResetAllDoors();
                 ResetAllClones();
-                controller.Respawn(currSpawnPad.position + new Vector3(0f, 2f, 0f));
                 controller.BecomeMedium();
             }
         }
@@ -200,6 +201,11 @@ public class Recorder : MonoBehaviour
             canSpawn = true;
         }
 
+        if (other.tag == "EndPad")
+        {
+            SceneManager.LoadScene("GUI");
+        }
+
         if (other.tag == "Button")
         {
             other.GetComponent<ButtonEvent>().ActivateButton(cloneSize);
@@ -217,11 +223,11 @@ public class Recorder : MonoBehaviour
         {
             canSpawn = false;
         }
-        else if (other.tag == "SpawnPad")
+        if (other.tag == "SpawnPad")
         {
             canSpawn = false;
         }
-        else if (other.tag == "LargeSpawnPad")
+        if (other.tag == "LargeSpawnPad")
         {
             canSpawn = false;
         }

@@ -11,6 +11,7 @@ TagManager:
   - SmallSpawnPad
   - Lever
   - LargeSpawnPad
+  - EndPad
   layers:
   - Default
   - TransparentFX
