@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private float currentYawVelocity;
     private float verticalSpeed;
     private bool isGrounded;
+    private bool hitCeiling;
 
     public GameObject small;
     public GameObject medium;
@@ -48,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         GroundCheck();
+        CeilingCheck();
         ApplyMovement();
     }
     
@@ -159,6 +161,7 @@ public class PlayerController : MonoBehaviour
 
         verticalSpeed += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
         if (isGrounded && verticalSpeed < 0) verticalSpeed = 0f;
+        if (hitCeiling && verticalSpeed > 0f) verticalSpeed = 0f;
 
         rb.velocity = new Vector3(horizVel.x, verticalSpeed, horizVel.z);
     }
@@ -170,6 +173,15 @@ public class PlayerController : MonoBehaviour
                                (col.bounds.extents.y - sphereRadius + 0.05f);
 
         isGrounded = Physics.CheckSphere(bottomCenter, sphereRadius, groundMask);
+    }
+
+    private void CeilingCheck()
+    {
+        float sphereRadius = col.radius * 0.9f;
+        Vector3 topCenter = col.bounds.center + Vector3.up *
+                            (col.bounds.extents.y - sphereRadius + 0.05f);
+
+        hitCeiling = Physics.CheckSphere(topCenter, sphereRadius, groundMask);
     }
 
     private void OnDrawGizmosSelected()

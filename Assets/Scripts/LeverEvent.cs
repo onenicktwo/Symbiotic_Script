@@ -1,16 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class LeverEvent : MonoBehaviour
 {
     public GameObject door;
-    public float waitTime = 3f;
+    public float waitTime = 6f;
     private bool isActivated = false;
+    public MovingPlatform movingPlatform;
 
     public void LeverOn()
     {
-        StartCoroutine(Lever());
+        if (door) 
+            StartCoroutine(Lever());
+        if (movingPlatform)
+            movingPlatform.SetRaised(true);
     }
 
     private IEnumerator Lever()
