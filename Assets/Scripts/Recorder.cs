@@ -203,6 +203,8 @@ public class Recorder : MonoBehaviour
 
         if (other.tag == "EndPad")
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             SceneManager.LoadScene("GUI");
         }
 
