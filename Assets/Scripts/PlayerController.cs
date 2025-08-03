@@ -64,7 +64,6 @@ public class PlayerController : MonoBehaviour
 
         jumpForce = 25f;
         moveSpeed = 12f;
-        airSpeed = 12f;
     }
 
     public void BecomeMedium()
@@ -78,7 +77,6 @@ public class PlayerController : MonoBehaviour
 
         jumpForce = 15f;
         moveSpeed = 7f;
-        airSpeed = 7f;
     }
     public void BecomeLarge()
     {
@@ -91,7 +89,6 @@ public class PlayerController : MonoBehaviour
 
         jumpForce = 5f;
         moveSpeed = 5f;
-        airSpeed = 5f;
     }
 
     private void ReadInput()
